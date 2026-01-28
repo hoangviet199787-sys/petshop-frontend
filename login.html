@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập - Pet House</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+        .auth-card { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .btn-auth { background: linear-gradient(90deg, #5b42f3, #7a5af8); color: white; border: none; font-weight: bold; }
+        .btn-auth:hover { opacity: 0.9; color: white; }
+        .top-header { background: linear-gradient(90deg, #5b42f3, #7a5af8); padding: 10px 0; color: white; text-align: center; font-weight: bold; font-size: 1.5rem; }
+        a { text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="top-header"><a href="index.html" class="text-white"><i class="fas fa-paw"></i> Pet House</a></div>
+
+    <div class="container">
+        <div class="auth-card">
+            <h3 class="text-center fw-bold mb-4">Đăng Nhập</h3>
+            <form id="login-form">
+                <div class="mb-3">
+                    <label class="form-label">Tên đăng nhập</label>
+                    <input type="text" id="username" class="form-control" required placeholder="Nhập tên...">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mật khẩu</label>
+                    <input type="password" id="password" class="form-control" required placeholder="Nhập mật khẩu...">
+                </div>
+                <button type="submit" class="btn btn-auth w-100 py-2 rounded-pill">ĐĂNG NHẬP</button>
+            </form>
+            <div class="text-center mt-3">
+                <small>Chưa có tài khoản? <a href="register.html" class="text-primary fw-bold">Đăng ký ngay</a></small>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://petshop-api-3uon.onrender.com/api";
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!username || !password) {
+                alert("Vui lòng nhập đủ thông tin!");
+                return;
+            }
+
+            try {
+                // Gửi yêu cầu đăng nhập
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    // --- XỬ LÝ LƯU USER THÔNG MINH ---
+                    // Server có thể trả về: { user: {...}, token: "..." } hoặc trực tiếp object user
+                    // Dòng này giúp lấy đúng phần thông tin user
+                    const userToSave = data.user || data; 
+                    
+                    localStorage.setItem('user', JSON.stringify(userToSave)); 
+                    
+                    alert("✅ Chào mừng " + (userToSave.username || username) + " quay trở lại!");
+                    window.location.href = "index.html"; 
+                } else {
+                    // In ra lỗi chính xác từ Server (Ví dụ: User không tồn tại)
+                    alert("❌ Lỗi: " + (data.message || "Sai tên đăng nhập hoặc mật khẩu!"));
+                }
+            } catch (err) { 
+                console.error(err);
+                alert("⚠️ Lỗi kết nối! (Có thể Server đang khởi động lại)"); 
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Trị Viên - Pet House</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; }
+        
+        /* SIDEBAR */
+        .sidebar { height: 100vh; width: 250px; position: fixed; top: 0; left: 0; background-color: #343a40; padding-top: 20px; color: white; z-index: 1000; }
+        .sidebar .nav-link { padding: 15px 25px; font-size: 1rem; color: #cfd8dc; cursor: pointer; transition: 0.3s; border-radius: 0; display: block; width: 100%; text-align: left; background: none; border: none; }
+        .sidebar .nav-link:hover { background-color: #495057; color: white; }
+        .sidebar .nav-link.active { background-color: #0d6efd; color: white; border-right: 4px solid #fff; }
+        .brand { text-align: center; font-size: 1.5rem; font-weight: bold; margin-bottom: 30px; color: #ffc107; text-transform: uppercase; }
+        
+        /* MAIN CONTENT */
+        .main-content { margin-left: 250px; padding: 30px; }
+        
+        /* HIỆU ỨNG CHUYỂN TAB */
+        .tab-section { display: none; } 
+        .tab-section.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* CARDS & TABLES */
+        .stat-card { border: none; border-radius: 15px; padding: 25px; color: white; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .bg-gradient-primary { background: linear-gradient(45deg, #4e73df, #224abe); }
+        .bg-gradient-success { background: linear-gradient(45deg, #1cc88a, #13855c); }
+        .bg-gradient-warning { background: linear-gradient(45deg, #f6c23e, #dda20a); }
+        .table img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
+
+        /* PAGINATION */
+        #pagination button { background: white; border: 1px solid #dee2e6; color: #0d6efd; padding: 5px 12px; margin: 0 2px; border-radius: 4px; }
+        #pagination button.active { background: #0d6efd; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="brand"><i class="fas fa-paw"></i> Pet Admin</div>
+        <div class="nav flex-column">
+            <button class="nav-link active" onclick="switchTab(event, 'dashboard-tab'); fetchStats()">
+                <i class="fas fa-chart-line me-2"></i> Tổng quan
+            </button>
+            <button class="nav-link" onclick="switchTab(event, 'products-tab'); loadProducts()">
+                <i class="fas fa-box-open me-2"></i> Kho Hàng
+            </button>
+            <button class="nav-link" onclick="switchTab(event, 'orders-tab'); fetchAdminOrders()">
+                <i class="fas fa-shopping-cart me-2"></i> Đơn Hàng
+            </button>
+            <a href="/" target="_blank" class="nav-link text-warning mt-5">
+                <i class="fas fa-external-link-alt me-2"></i> Xem Web Chính
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <div id="dashboard-tab" class="tab-section active">
+            <h3 class="mb-4 fw-bold">📊 Tổng quan kinh doanh</h3>
+            <div class="row g-4 mb-5">
+                <div class="col-md-4"><div class="stat-card bg-gradient-success"><div><h6>DOANH THU</h6><h2 class="fw-bold mb-0" id="stat-revenue">0đ</h2></div><i class="fas fa-wallet fa-3x opacity-50"></i></div></div>
+                <div class="col-md-4"><div class="stat-card bg-gradient-primary"><div><h6>TỔNG ĐƠN</h6><h2 class="fw-bold mb-0" id="stat-orders">0</h2></div><i class="fas fa-shopping-bag fa-3x opacity-50"></i></div></div>
+                <div class="col-md-4"><div class="stat-card bg-gradient-warning"><div><h6>SẢN PHẨM</h6><h2 class="fw-bold mb-0" id="stat-products">0</h2></div><i class="fas fa-cubes fa-3x opacity-50"></i></div></div>
+            </div>
+            <h5>Đơn hàng mới nhất</h5>
+            <div class="card p-3 shadow-sm">
+                <table class="table align-middle"><thead class="table-light"><tr><th>Mã</th><th>Khách</th><th>Tổng</th><th>Trạng thái</th></tr></thead><tbody id="recent-orders-body"></tbody></table>
+            </div>
+        </div>
+
+        <div id="products-tab" class="tab-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold">📦 Kho hàng</h3>
+                <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus-circle"></i> Thêm món mới</button>
+            </div>
+            <div class="card p-4 shadow-sm">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark"><tr><th>Ảnh</th><th>Tên sản phẩm</th><th>Giá</th><th>Danh mục</th><th>Hành động</th></tr></thead>
+                    <tbody id="product-list"></tbody>
+                </table>
+                <div id="pagination" class="d-flex justify-content-center mt-3"></div>
+            </div>
+        </div>
+
+        <div id="orders-tab" class="tab-section">
+            <h3 class="mb-4 fw-bold">📋 Danh sách đơn hàng</h3>
+            <div class="card p-3 shadow-sm">
+                <table class="table table-hover align-middle">
+                    <thead class="bg-light"><tr><th>Mã</th><th>Khách</th><th>Tổng tiền</th><th>Trạng thái</th><th>Ngày</th></tr></thead>
+                    <tbody id="order-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white"><h5 class="modal-title" id="modalTitle">Sản phẩm</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <form id="productForm">
+                        <div class="mb-3">
+                            <label class="form-label">Tên sản phẩm</label>
+                            <input type="text" class="form-control" id="p-name" required placeholder="Nhập tên món hàng...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Giá (VNĐ)</label>
+                            <input type="number" class="form-control" id="p-price" required placeholder="Nhập số tiền...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Link Ảnh</label>
+                            <input type="text" class="form-control" id="p-image" required placeholder="Dán link ảnh vào đây...">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Danh mục</label>
+                            <select class="form-select" id="p-category">
+                                <option value="Thức ăn">Thức ăn</option>
+                                <option value="Phụ kiện">Phụ kiện</option>
+                                <option value="Vệ sinh">Vệ sinh</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 fw-bold" id="btnSave">LƯU SẢN PHẨM</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ⚠️ LINK API (Nếu bạn đổi server thì sửa link này)
+        const API_URL = "https://petshop-api-3uon.onrender.com/api"; 
+
+        // 1. CHUYỂN TAB (Thủ công)
+        function switchTab(event, tabId) {
+            document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        let allProducts = [];
+        let currentPage = 1;
+        let itemsPerPage = 5;
+        let editingId = null;
+        let productModalBox;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            productModalBox = new bootstrap.Modal(document.getElementById('productModal'));
+            fetchStats();
+        });
+
+        // 2. TẢI SẢN PHẨM
+        async function loadProducts() {
+            try {
+                const res = await fetch(`${API_URL}/products`);
+                allProducts = await res.json();
+                renderTable();
+                renderPagination();
+            } catch (e) { console.error(e); }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('product-list');
+            tbody.innerHTML = '';
+            const start = (currentPage - 1) * itemsPerPage;
+            const viewData = allProducts.slice(start, start + itemsPerPage);
+
+            viewData.forEach(p => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><img src="${p.image}"></td>
+                    <td><b>${p.name}</b></td>
+                    <td class="text-danger fw-bold">${Number(p.price).toLocaleString()}đ</td>
+                    <td><span class="badge bg-info text-dark">${p.category || 'Chưa phân loại'}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="openEditModal('${p._id}')"><i class="fas fa-edit"></i> Sửa</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteProduct('${p._id}')"><i class="fas fa-trash"></i> Xóa</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderPagination() {
+            const container = document.getElementById('pagination');
+            container.innerHTML = '';
+            const totalPages = Math.ceil(allProducts.length / itemsPerPage);
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.innerText = i;
+                if(i===currentPage) btn.classList.add('active');
+                btn.onclick = () => { currentPage=i; renderTable(); renderPagination(); };
+                container.appendChild(btn);
+            }
+        }
+
+        // 3. LOGIC THÊM & SỬA
+        function openAddModal() {
+            editingId = null;
+            document.getElementById('productForm').reset();
+            document.getElementById('p-category').value = "Thức ăn"; // Mặc định chọn cái đầu
+            document.getElementById('modalTitle').innerText = "Thêm Mới";
+            document.getElementById('btnSave').innerText = "LƯU SẢN PHẨM";
+            document.getElementById('btnSave').className = "btn btn-primary w-100 fw-bold";
+            productModalBox.show();
+        }
+
+        function openEditModal(id) {
+            const p = allProducts.find(x => x._id === id);
+            editingId = id;
+            
+            // Đổ dữ liệu vào Form
+            document.getElementById('p-name').value = p.name;
+            document.getElementById('p-price').value = p.price;
+            document.getElementById('p-image').value = p.image;
+            document.getElementById('p-category').value = p.category || "Thức ăn"; // Chọn đúng danh mục cũ
+
+            document.getElementById('modalTitle').innerText = "Sửa Sản Phẩm";
+            document.getElementById('btnSave').innerText = "CẬP NHẬT NGAY";
+            document.getElementById('btnSave').className = "btn btn-warning w-100 fw-bold text-dark";
+            productModalBox.show();
+        }
+
+        // KHI BẤM LƯU
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('p-name').value,
+                price: document.getElementById('p-price').value,
+                image: document.getElementById('p-image').value,
+                category: document.getElementById('p-category').value // Lấy danh mục gửi lên Server
+            };
+
+            if(editingId) {
+                // Sửa
+                await fetch(`${API_URL}/products/${editingId}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)});
+            } else {
+                // Thêm
+                await fetch(`${API_URL}/products`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)});
+            }
+            
+            productModalBox.hide(); 
+            loadProducts(); 
+            fetchStats();
+        });
+
+        async function deleteProduct(id) {
+            if(confirm("Bạn chắc chắn muốn xóa?")) { await fetch(`${API_URL}/products/${id}`, { method: 'DELETE' }); loadProducts(); fetchStats(); }
+        }
+
+        // 4. API KHÁC
+        async function fetchStats() {
+            try {
+                const res = await fetch(`${API_URL}/orders/admin/stats`); const data = await res.json();
+                document.getElementById('stat-revenue').innerText = (data.totalRevenue || 0).toLocaleString() + 'đ';
+                document.getElementById('stat-orders').innerText = data.totalOrders || 0;
+                document.getElementById('stat-products').innerText = data.totalProducts || 0;
+            } catch(e){}
+        }
+
+        async function fetchAdminOrders() {
+            try {
+                const res = await fetch(`${API_URL}/orders/admin/all`); const orders = await res.json();
+                document.getElementById('order-table-body').innerHTML = orders.map(o => `<tr><td>#${o._id.slice(-6).toUpperCase()}</td><td>${o.userId?.username || 'Khách'}</td><td class="text-danger fw-bold">${o.totalAmount.toLocaleString()}đ</td><td><select class="form-select form-select-sm" onchange="updateStatus('${o._id}', this.value)"><option value="Pending" ${o.status==='Pending'?'selected':''}>⏳ Chờ xử lý</option><option value="Shipping" ${o.status==='Shipping'?'selected':''}>🚚 Đang giao</option><option value="Completed" ${o.status==='Completed'?'selected':''}>✅ Hoàn thành</option><option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>❌ Hủy</option></select></td><td>${new Date(o.createdAt).toLocaleDateString('vi-VN')}</td></tr>`).join('');
+            } catch(e){}
+        }
+        async function updateStatus(id, st) { await fetch(`${API_URL}/orders/admin/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({status: st})}); fetchStats(); }
+    </script>
+</body>
+</html>

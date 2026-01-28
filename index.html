@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet House - Trang Chủ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+        
+        /* HEADER */
+        .top-header { background: linear-gradient(90deg, #5b42f3, #7a5af8); padding: 10px 0; color: white; }
+        .brand-logo { font-size: 1.8rem; font-weight: bold; color: white; text-decoration: none; }
+        .search-box { width: 100%; max-width: 500px; display: flex; }
+        .search-input { border: none; border-radius: 4px 0 0 4px; padding: 8px 15px; width: 100%; outline: none; }
+        .search-btn { background: #2c3e50; color: white; border: none; padding: 8px 20px; border-radius: 0 4px 4px 0; font-weight: bold; }
+        .cart-btn { background: rgba(255,255,255,0.2); color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: 500; }
+        .auth-links a { color: white; text-decoration: none; font-size: 0.95rem; margin: 0 10px; }
+        
+        /* MENU */
+        .main-menu { background-color: #263238; }
+        .main-menu .nav-link { color: #cfd8dc; padding: 12px 30px; font-weight: 500; text-transform: uppercase; font-size: 0.95rem; transition: 0.3s; cursor: pointer; }
+        .main-menu .nav-link:hover { color: white; background-color: rgba(255,255,255,0.1); }
+
+        /* BANNER */
+        .hero-section { background: url('https://img.freepik.com/free-photo/group-portrait-adorable-puppies_53876-64778.jpg') center/cover; height: 420px; position: relative; display: flex; align-items: center; justify-content: center; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.7); }
+        .hero-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); }
+        .hero-content { position: relative; z-index: 1; text-align: center; }
+
+        /* CARD SẢN PHẨM */
+        .product-card { background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; height: 100%; position: relative; cursor: pointer; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+        .product-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 5px; margin-bottom: 10px; }
+        
+        /* RATING & HOT */
+        .star-rating i { color: #ffc107; font-size: 0.8rem; }
+        .badge-hot { position: absolute; top: 10px; right: 10px; background: #ff4757; color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        /* FOOTER */
+        footer { background-color: #263238; color: #cfd8dc; padding-top: 50px; margin-top: 50px; font-size: 0.9rem; border-top: 3px solid #1e272c; }
+        footer h5 { color: #4fc3f7; font-weight: bold; margin-bottom: 20px; font-size: 1.1rem; }
+        footer ul { list-style: none; padding: 0; }
+        footer ul li { margin-bottom: 12px; display: flex; align-items: flex-start; }
+        footer ul li i { width: 25px; color: #ff6b6b; margin-top: 4px; }
+        footer a { color: #cfd8dc; text-decoration: none; transition: 0.2s; }
+        footer a:hover { color: white; text-decoration: underline; }
+        .copyright { background-color: #1c262b; padding: 15px 0; text-align: center; margin-top: 40px; font-size: 0.85rem; border-top: 1px solid #37474f; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="top-header">
+            <div class="container d-flex justify-content-between align-items-center">
+                <a href="index.html" class="brand-logo"><i class="fas fa-paw"></i> Pet House</a>
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="Tìm kiếm sản phẩm...">
+                    <button class="search-btn">Tìm</button>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="auth-links border-end pe-3 me-3" id="auth-links">
+                        <a href="login.html">Đăng nhập</a> | <a href="register.html">Đăng ký</a>
+                    </div>
+                    <a href="cart.html" class="cart-btn">
+                        <i class="fas fa-shopping-cart me-1"></i> Giỏ hàng (<span id="cart-count">0</span>)
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="main-menu">
+            <div class="container">
+                <nav class="nav">
+                    <a class="nav-link text-warning" href="index.html">Trang chủ</a>
+                    <a class="nav-link" href="products.html">Sản phẩm</a>
+                    <a class="nav-link" href="contact.html">Liên hệ</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="display-4 fw-bold">CHĂM SÓC THÚ CƯNG TẬN TÂM</h1>
+            <p class="lead">Siêu thị thức ăn & phụ kiện thú cưng hàng đầu</p>
+            <a href="products.html" class="btn btn-light fw-bold rounded-pill px-5 mt-3 text-primary">XEM SẢN PHẨM</a>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold text-danger text-uppercase"><i class="fas fa-fire me-2"></i> Sản Phẩm Bán Chạy</h3>
+            <a href="products.html" class="text-decoration-none">Xem thêm ></a>
+        </div>
+        <div class="row g-4" id="hot-products"></div>
+    </div>
+
+    <div class="container mt-5">
+        <h3 class="fw-bold mb-4 text-primary text-uppercase"><i class="fas fa-star me-2"></i> Sản Phẩm Mới Về</h3>
+        <div class="row g-4" id="new-products"></div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5">
+                    <h5>Thông tin liên hệ</h5>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Đường ABC, Q. XYZ, TP. HCM</li>
+                        <li><i class="fas fa-envelope"></i> Email: info@pethouse.com</li>
+                        <li><i class="fas fa-phone-alt"></i> Hotline: 0987.654.321</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Chính sách</h5>
+                    <ul>
+                        <li><a href="#">Bảo mật thông tin</a></li>
+                        <li><a href="#">Chính sách đổi trả</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Kết nối</h5>
+                    <ul>
+                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="#"><i class="fab fa-youtube"></i> Youtube</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">© 2025 Pet House - Uy tín tạo niềm tin</div>
+    </footer>
+
+    <div class="modal fade" id="productDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pb-5">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <img id="modal-img" src="" class="img-fluid rounded shadow-sm" style="width:100%; object-fit:cover;">
+                        </div>
+                        <div class="col-md-6">
+                            <h3 id="modal-name" class="fw-bold mt-3 mt-md-0"></h3>
+                            <div class="mb-2 text-warning">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                <span class="text-muted ms-2">(50 đánh giá)</span>
+                            </div>
+                            <h2 id="modal-price" class="text-danger fw-bold my-3"></h2>
+                            <p class="text-muted">Mô tả: Sản phẩm chất lượng cao. Bảo hành đầy đủ.</p>
+                            
+                            <div class="d-grid gap-2">
+                                <button id="modal-add-btn" class="btn btn-primary btn-lg rounded-pill">
+                                    <i class="fas fa-cart-plus me-2"></i> THÊM VÀO GIỎ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = "https://petshop-api-3uon.onrender.com/api";
+        let allProducts = [];
+        let detailModal;
+
+        window.onload = async () => {
+            detailModal = new bootstrap.Modal(document.getElementById('productDetailModal'));
+            await loadProducts();
+            updateHeader();
+        };
+
+        async function loadProducts() {
+            try {
+                const res = await fetch(`${API_URL}/products`);
+                allProducts = await res.json();
+                
+                const hotProducts = allProducts.slice(0, 4);
+                const newProducts = allProducts.slice(4, 8);
+
+                renderGrid('hot-products', hotProducts, true);
+                renderGrid('new-products', newProducts, false);
+
+            } catch(e) { console.log(e); }
+        }
+
+        function renderGrid(containerId, products, isHot) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = products.map(p => `
+                <div class="col-md-3 col-6">
+                    <div class="product-card" onclick="showDetail('${p._id}')">
+                        ${isHot ? '<div class="badge-hot">HOT</div>' : ''}
+                        <img src="${p.image}" alt="${p.name}">
+                        <div class="text-muted small">${p.category || 'Khác'}</div>
+                        <h6 class="fw-bold text-truncate">${p.name}</h6>
+                        <div class="star-rating mb-2"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <div class="text-danger fw-bold fs-5">${Number(p.price).toLocaleString()}đ</div>
+                        <button onclick="event.stopPropagation(); addToCart('${p._id}', '${p.name}', ${p.price}, '${p.image}')" class="btn btn-dark w-100 mt-2 btn-sm rounded-pill"><i class="fas fa-shopping-bag me-1"></i> Mua ngay</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showDetail(id) {
+            const p = allProducts.find(x => x._id === id);
+            if(p) {
+                document.getElementById('modal-img').src = p.image;
+                document.getElementById('modal-name').innerText = p.name;
+                document.getElementById('modal-price').innerText = Number(p.price).toLocaleString() + 'đ';
+                const btn = document.getElementById('modal-add-btn');
+                btn.onclick = () => { addToCart(p._id, p.name, p.price, p.image); detailModal.hide(); };
+                detailModal.show();
+            }
+        }
+
+        // --- HÀM ADD TO CART ĐÃ SỬA: CHẶN KHI CHƯA ĐĂNG NHẬP ---
+        function addToCart(id, name, price, image) {
+            // 1. Kiểm tra đăng nhập
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                // Nếu chưa đăng nhập -> Hỏi user
+                if(confirm("Bạn cần Đăng Nhập để mua hàng. Chuyển đến trang đăng nhập?")) {
+                    window.location.href = "login.html";
+                }
+                return; // Dừng lại, không cho thêm vào giỏ
+            }
+
+            // 2. Nếu đã đăng nhập -> Thêm vào giỏ bình thường
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            let item = cart.find(i => i.id === id);
+            if(item) item.quantity++; else cart.push({id, name, price, image, quantity:1});
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateHeader();
+            alert("Đã thêm " + name + " vào giỏ!");
+        }
+        // ---------------------------------------------------------
+
+        function updateHeader() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            document.getElementById('cart-count').innerText = cart.reduce((s,i)=>s+i.quantity,0);
+            const user = JSON.parse(localStorage.getItem('user'));
+            if(user) document.getElementById('auth-links').innerHTML = `Hi, <b>${user.username}</b> <a href="#" onclick="logout()" class="ms-1 text-warning">(Thoát)</a>`;
+        }
+        function logout() { localStorage.removeItem('user'); location.reload(); }
+    </script>
+</body>
+</html>
