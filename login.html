@@ -25,8 +25,8 @@
             <h3 class="text-center fw-bold mb-4">Đăng Nhập</h3>
             <form id="login-form">
                 <div class="mb-3">
-                    <label class="form-label">Tên đăng nhập</label>
-                    <input type="text" id="username" class="form-control" required placeholder="Nhập tên...">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="text" id="phone" class="form-control" required placeholder="Nhập số điện thoại đã đăng ký...">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Mật khẩu</label>
@@ -45,41 +45,39 @@
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const username = document.getElementById('username').value.trim();
+            // Lấy giá trị SĐT thay vì Username
+            const phone = document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value.trim();
 
-            if (!username || !password) {
-                alert("Vui lòng nhập đủ thông tin!");
+            if (!phone || !password) {
+                alert("Vui lòng nhập đủ Số điện thoại và Mật khẩu!");
                 return;
             }
 
             try {
-                // Gửi yêu cầu đăng nhập
                 const res = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    // QUAN TRỌNG: Gửi đúng key 'phoneNumber' cho Backend
+                    body: JSON.stringify({ 
+                        phoneNumber: phone, 
+                        password: password 
+                    })
                 });
 
                 const data = await res.json();
 
                 if (res.ok) {
-                    // --- XỬ LÝ LƯU USER THÔNG MINH ---
-                    // Server có thể trả về: { user: {...}, token: "..." } hoặc trực tiếp object user
-                    // Dòng này giúp lấy đúng phần thông tin user
-                    const userToSave = data.user || data; 
-                    
-                    localStorage.setItem('user', JSON.stringify(userToSave)); 
-                    
-                    alert("✅ Chào mừng " + (userToSave.username || username) + " quay trở lại!");
+                    const userToSave = data.user || data;
+                    localStorage.setItem('user', JSON.stringify(userToSave));
+                    alert("✅ Đăng nhập thành công! Chào mừng " + userToSave.username);
                     window.location.href = "index.html"; 
                 } else {
-                    // In ra lỗi chính xác từ Server (Ví dụ: User không tồn tại)
-                    alert("❌ Lỗi: " + (data.message || "Sai tên đăng nhập hoặc mật khẩu!"));
+                    alert("❌ Lỗi: " + (data.message || "Sai số điện thoại hoặc mật khẩu!"));
                 }
             } catch (err) { 
                 console.error(err);
-                alert("⚠️ Lỗi kết nối! (Có thể Server đang khởi động lại)"); 
+                alert("⚠️ Lỗi kết nối! Server có thể đang khởi động lại."); 
             }
         });
     </script>

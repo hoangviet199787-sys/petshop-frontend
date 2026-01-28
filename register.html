@@ -25,12 +25,12 @@
             <h3 class="text-center fw-bold mb-4">Đăng Ký Thành Viên</h3>
             <form id="register-form">
                 <div class="mb-3">
-                    <label class="form-label">Tên đăng nhập</label>
-                    <input type="text" id="username" class="form-control" required placeholder="Nhập tên...">
+                    <label class="form-label">Tên hiển thị (Tên người dùng)</label>
+                    <input type="text" id="username" class="form-control" required placeholder="Ví dụ: Nguyễn Văn A">
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Số điện thoại</label>
+                    <label class="form-label">Số điện thoại (Dùng để đăng nhập)</label>
                     <input type="text" id="phone" class="form-control" required placeholder="Nhập số điện thoại...">
                 </div>
                 <div class="mb-3">
@@ -51,41 +51,37 @@
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // 2. Lấy giá trị từ các ô input
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
-            const phone = document.getElementById('phone').value.trim(); // Lấy sđt
+            const phone = document.getElementById('phone').value.trim();
 
-            // Kiểm tra rỗng
             if (!username || !password || !phone) {
                 alert("Vui lòng nhập đầy đủ thông tin!");
                 return;
             }
 
             try {
-                // 3. Gửi request kèm phoneNumber lên Server
                 const res = await fetch(`${API_URL}/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         username: username, 
                         password: password,
-                        phoneNumber: phone // <--- QUAN TRỌNG: Server bắt buộc cần cái này
+                        phoneNumber: phone 
                     })
                 });
 
-                const data = await res.json(); // Đọc phản hồi từ server
+                const data = await res.json();
 
                 if (res.ok) {
-                    alert("✅ Đăng ký thành công! Hãy đăng nhập ngay.");
+                    alert("✅ Đăng ký thành công! Hãy dùng SỐ ĐIỆN THOẠI vừa rồi để đăng nhập.");
                     window.location.href = "login.html";
                 } else {
-                    // Hiển thị lỗi cụ thể từ Server (nếu có)
                     alert("❌ Lỗi: " + (data.message || "Tên hoặc SĐT đã tồn tại!"));
                 }
             } catch (err) { 
                 console.error(err);
-                alert("⚠️ Lỗi kết nối! Có thể Server đang khởi động, vui lòng thử lại sau 1 phút."); 
+                alert("⚠️ Lỗi kết nối! Server có thể đang bận."); 
             }
         });
     </script>
