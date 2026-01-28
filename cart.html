@@ -19,15 +19,13 @@
         .main-menu .nav-link:hover { color: white; background-color: rgba(255,255,255,0.1); }
         .auth-links a { color: white; text-decoration: none; margin: 0 10px; }
 
-        /* --- QUAN TRỌNG: SỬA LỖI ẢNH BỊ TO --- */
-        /* Dùng !important để đảm bảo ảnh luôn nhỏ gọn 80px */
-        table img, .table img, .cart-table img { 
+        /* ẢNH SẢN PHẨM TRONG GIỎ */
+        table img, .table img { 
             width: 80px !important; 
             height: 80px !important; 
             object-fit: cover; 
             border-radius: 5px; 
         }
-        /* ------------------------------------ */
 
         .cart-container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .total-box { background: #f8f9fa; padding: 20px; border-radius: 10px; border: 1px solid #eee; }
@@ -104,9 +102,6 @@
     </footer>
 
     <script>
-        // API để đó cho đẹp, mình dùng chế độ Demo để tránh lỗi
-        const API_URL = "https://petshop-api-3uon.onrender.com/api";
-
         // Chạy ngay khi tải trang
         window.onload = () => { 
             renderCart(); 
@@ -120,7 +115,7 @@
             const tbody = document.getElementById('cart-body');
             const emptyMsg = document.getElementById('empty-cart-msg');
             
-            tbody.innerHTML = ''; // Xóa cũ vẽ mới
+            tbody.innerHTML = ''; 
             
             if (cart.length === 0) {
                 emptyMsg.classList.remove('d-none');
@@ -158,7 +153,7 @@
                     </tr>`;
             });
             updateTotal(total);
-            updateHeader(); // Cập nhật số trên menu
+            updateHeader(); 
         }
 
         // 2. Tính tổng tiền
@@ -185,25 +180,15 @@
             renderCart();
         }
 
-        // 5. Cập nhật số lượng trên Menu (Header)
+        // 5. Cập nhật số lượng trên Menu
         function updateHeader() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
-            
-            // Cập nhật vào thẻ span có id="cart-count"
             const countSpan = document.getElementById('cart-count');
             if(countSpan) countSpan.innerText = totalQty;
-            
-            // Fallback: Tìm các thẻ a chứa chữ 'Giỏ hàng' để cập nhật nếu id không khớp
-            const allLinks = document.querySelectorAll('a');
-            allLinks.forEach(link => {
-                if(link.innerHTML.includes('Giỏ hàng')) {
-                     link.innerHTML = `<i class="fas fa-shopping-cart me-1"></i> Giỏ hàng (${totalQty})`;
-                }
-            });
         }
 
-        // 6. THANH TOÁN (CHẾ ĐỘ DEMO - LUÔN THÀNH CÔNG)
+        // --- 6. THANH TOÁN (CODE MỚI - KẾT NỐI ADMIN) ---
         function checkout() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const user = JSON.parse(localStorage.getItem('user'));
@@ -218,15 +203,32 @@
                 return;
             }
 
-            // Giả lập thanh toán thành công (Bypass Server Error)
-            if(confirm("Xác nhận đặt hàng với tổng tiền: " + document.getElementById('final-total').innerText + "?")) {
-                setTimeout(() => {
-                    alert("✅ Đặt hàng thành công! (Đơn hàng đã được ghi nhận)");
-                    localStorage.removeItem('cart'); // Xóa giỏ
-                    renderCart(); // Vẽ lại bảng trống
-                    window.location.reload(); // Tải lại trang
-                }, 500);
-            }
+            // Tính tổng tiền
+            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            if(!confirm(`Xác nhận đặt hàng với tổng tiền: ${totalAmount.toLocaleString()}đ?`)) return;
+
+            // TẠO ĐƠN HÀNG MỚI
+            const newOrder = {
+                id: 'DH' + Math.floor(Math.random() * 10000), // Mã đơn ngẫu nhiên
+                customer: user.username,
+                phone: user.phoneNumber || "09xxxxxxxxx", 
+                date: new Date().toLocaleString('vi-VN'), // Ngày giờ hiện tại
+                items: cart,
+                total: totalAmount,
+                status: 'pending' // Mặc định: Chờ xử lý
+            };
+
+            // Lấy danh sách đơn cũ + Thêm đơn mới vào
+            let allOrders = JSON.parse(localStorage.getItem('allOrders')) || [];
+            allOrders.unshift(newOrder); // Thêm lên đầu danh sách
+            localStorage.setItem('allOrders', JSON.stringify(allOrders));
+
+            // Xóa giỏ hàng và thông báo
+            localStorage.removeItem('cart');
+            alert("✅ Đặt hàng thành công! Mã đơn: " + newOrder.id + "\n(Admin đã nhận được đơn hàng này)");
+            
+            window.location.reload(); 
         }
 
         // 7. Kiểm tra user đăng nhập
