@@ -13,35 +13,22 @@
         /* HEADER */
         .top-header { background: linear-gradient(90deg, #5b42f3, #7a5af8); padding: 10px 0; color: white; }
         .brand-logo { font-size: 1.8rem; font-weight: bold; color: white; text-decoration: none; }
-        .search-box { width: 100%; max-width: 500px; display: flex; }
-        .search-input { border: none; border-radius: 4px 0 0 4px; padding: 8px 15px; width: 100%; outline: none; }
-        .search-btn { background: #2c3e50; color: white; border: none; padding: 8px 20px; border-radius: 0 4px 4px 0; font-weight: bold; }
-        .cart-btn { background: rgba(255,255,255,0.2); color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: 500; }
-        .auth-links a { color: white; text-decoration: none; font-size: 0.95rem; margin: 0 10px; }
-        
-        /* MENU */
         .main-menu { background-color: #263238; }
-        .main-menu .nav-link { color: #cfd8dc; padding: 12px 30px; font-weight: 500; text-transform: uppercase; font-size: 0.95rem; transition: 0.3s; }
-        .main-menu .nav-link:hover, .main-menu .nav-link.active { color: white; background-color: rgba(255,255,255,0.1); }
+        .main-menu .nav-link { color: #cfd8dc; padding: 12px 30px; font-weight: 500; text-transform: uppercase; transition: 0.3s; }
+        .main-menu .nav-link:hover { color: white; background-color: rgba(255,255,255,0.1); }
+        .auth-links a { color: white; text-decoration: none; margin: 0 10px; }
 
-        /* BỘ LỌC */
-        .filter-bar { background: white; padding: 15px; border-radius: 50px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: inline-flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-        .filter-btn { border: none; background: #f1f3f5; padding: 8px 20px; border-radius: 20px; color: #555; transition: 0.2s; }
-        .filter-btn:hover, .filter-btn.active { background: #ff6b6b; color: white; }
+        /* FILTER BOX (KHUNG LỌC GIÁ) */
+        .filter-box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; }
         
-        /* CARD SẢN PHẨM */
-        .product-card { background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.3s; height: 100%; cursor: pointer; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .product-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 5px; margin-bottom: 10px; }
-        
-        /* NGÔI SAO VÀNG */
-        .star-rating i { color: #ffc107; font-size: 0.8rem; margin-right: 2px; }
+        /* PRODUCT CARD */
+        .product-card { background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; height: 100%; position: relative; cursor: pointer; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+        .product-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 5px; margin-bottom: 10px; }
+        .badge-hot { position: absolute; top: 10px; right: 10px; background: #ff4757; color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; }
 
         /* FOOTER */
         footer { background-color: #263238; color: #cfd8dc; padding-top: 50px; margin-top: 50px; font-size: 0.9rem; border-top: 3px solid #1e272c; }
-        footer h5 { color: #4fc3f7; font-weight: bold; margin-bottom: 20px; font-size: 1.1rem; }
-        footer a { color: #cfd8dc; text-decoration: none; }
-        .copyright { background-color: #1c262b; padding: 15px 0; text-align: center; margin-top: 40px; font-size: 0.85rem; border-top: 1px solid #37474f; }
     </style>
 </head>
 <body>
@@ -50,17 +37,8 @@
         <div class="top-header">
             <div class="container d-flex justify-content-between align-items-center">
                 <a href="index.html" class="brand-logo"><i class="fas fa-paw"></i> Pet House</a>
-                <div class="search-box">
-                    <input type="text" class="search-input" id="search-input" placeholder="Nhập tên sản phẩm..." onkeyup="handleFilter()">
-                    <button class="search-btn"><i class="fas fa-search"></i></button>
-                </div>
-                <div class="d-flex align-items-center">
-                    <div class="auth-links border-end pe-3 me-3" id="auth-links">
-                        <a href="login.html">Đăng nhập</a> | <a href="register.html">Đăng ký</a>
-                    </div>
-                    <a href="cart.html" class="cart-btn">
-                        <i class="fas fa-shopping-cart me-1"></i> Giỏ hàng (<span id="cart-count">0</span>)
-                    </a>
+                <div class="auth-links" id="auth-links">
+                    <a href="login.html">Đăng nhập</a> | <a href="register.html">Đăng ký</a>
                 </div>
             </div>
         </div>
@@ -68,52 +46,67 @@
             <div class="container">
                 <nav class="nav">
                     <a class="nav-link" href="index.html">Trang chủ</a>
-                    <a class="nav-link active" href="products.html">Sản phẩm</a>
+                    <a class="nav-link text-warning fw-bold" href="products.html">Sản phẩm</a>
                     <a class="nav-link" href="contact.html">Liên hệ</a>
+                    <a href="cart.html" class="nav-link">
+                        <i class="fas fa-shopping-cart me-1"></i> Giỏ hàng (<span id="cart-count">0</span>)
+                    </a>
                 </nav>
             </div>
         </div>
     </header>
 
-    <div class="container mt-4 text-center">
-        <h3 class="mb-4 fw-bold">Tất Cả Sản Phẩm</h3>
+    <div class="container mt-4">
+        <div class="filter-box">
+            <h5 class="fw-bold mb-3"><i class="fas fa-filter text-primary"></i> Bộ lọc tìm kiếm</h5>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">Tên sản phẩm</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" id="search-keyword" class="form-control" placeholder="Nhập tên thức ăn, phụ kiện...">
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Giá thấp nhất (VNĐ)</label>
+                    <input type="number" id="min-price" class="form-control" placeholder="0">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Giá cao nhất (VNĐ)</label>
+                    <input type="number" id="max-price" class="form-control" placeholder="Ví dụ: 500000">
+                </div>
 
-        <div class="filter-bar mb-4">
-            <button class="filter-btn active" onclick="filterCategory('Tất cả', this)">Tất cả</button>
-            <button class="filter-btn" onclick="filterCategory('Thức ăn', this)">Thức ăn</button>
-            <button class="filter-btn" onclick="filterCategory('Phụ kiện', this)">Phụ kiện</button>
-            <button class="filter-btn" onclick="filterCategory('Vệ sinh', this)">Vệ sinh</button>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100 fw-bold" onclick="filterProducts()">LỌC NGAY</button>
+                </div>
+            </div>
+            <div class="mt-2 text-end">
+                <button class="btn btn-sm btn-outline-secondary" onclick="resetFilter()">Làm mới bộ lọc</button>
+            </div>
         </div>
 
-        <div class="row g-4" id="product-list"></div>
-        <div id="pagination" class="d-flex justify-content-center mt-5"></div>
+        <h3 class="fw-bold mb-4 ps-2 border-start border-4 border-primary">Danh Sách Sản Phẩm (<span id="result-count">0</span>)</h3>
+        <div class="row g-4" id="product-list">
+            </div>
+        <div id="no-result" class="text-center py-5 d-none">
+            <img src="https://cdn-icons-png.flaticon.com/512/6134/6134065.png" width="100">
+            <p class="mt-3 text-muted">Không tìm thấy sản phẩm nào trong khoảng giá này!</p>
+        </div>
     </div>
 
     <div class="modal fade" id="productDetailModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header border-0">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+                <div class="modal-header border-0"><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                 <div class="modal-body pb-5">
                     <div class="row">
+                        <div class="col-md-6"><img id="modal-img" src="" class="img-fluid rounded" style="width:100%;"></div>
                         <div class="col-md-6">
-                            <img id="modal-img" src="" class="img-fluid rounded shadow-sm w-100 object-fit-cover">
-                        </div>
-                        <div class="col-md-6">
-                            <h3 id="modal-name" class="fw-bold mt-3 mt-md-0"></h3>
-                            <div class="mb-2 star-rating">
-                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                                <span class="text-muted ms-2 small">(50 đánh giá)</span>
-                            </div>
+                            <h3 id="modal-name" class="fw-bold mt-3"></h3>
                             <h2 id="modal-price" class="text-danger fw-bold my-3"></h2>
-                            <p class="text-muted">Mô tả: Sản phẩm chính hãng, đảm bảo chất lượng tốt nhất cho thú cưng của bạn. Hỗ trợ đổi trả trong 7 ngày.</p>
-                            
-                            <div class="d-grid gap-2 mt-4">
-                                <button id="modal-add-btn" class="btn btn-primary btn-lg rounded-pill">
-                                    <i class="fas fa-cart-plus me-2"></i> THÊM VÀO GIỎ
-                                </button>
-                            </div>
+                            <p class="text-muted">Sản phẩm chính hãng, chất lượng cao.</p>
+                            <button id="modal-add-btn" class="btn btn-primary rounded-pill w-100"><i class="fas fa-cart-plus"></i> THÊM VÀO GIỎ</button>
                         </div>
                     </div>
                 </div>
@@ -121,150 +114,128 @@
         </div>
     </div>
 
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-5">
-                    <h5>Thông tin liên hệ</h5>
-                    <ul>
-                        <li><i class="fas fa-map-marker-alt"></i> 123 Đường ABC, Q. XYZ, TP. HCM</li>
-                        <li><i class="fas fa-envelope"></i> Email: info@pethouse.com</li>
-                        <li><i class="fas fa-phone-alt"></i> Hotline: 0987.654.321</li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h5>Chính sách</h5>
-                    <ul>
-                        <li><a href="#">Bảo mật thông tin</a></li>
-                        <li><a href="#">Chính sách đổi trả</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Kết nối</h5>
-                    <ul>
-                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
-                        <li><a href="#"><i class="fab fa-youtube"></i> Youtube</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="copyright">© 2025 Pet House - Uy tín tạo niềm tin</div>
-    </footer>
+    <footer><div class="container text-center py-4 text-secondary">© 2025 Pet House</div></footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const API_URL = "https://petshop-api-3uon.onrender.com/api";
-        let allProducts = [], filteredProducts = [], currentPage = 1, itemsPerPage = 8;
+        const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3047/3047928.png";
+        
+        let allProducts = []; // Biến chứa toàn bộ sản phẩm gốc
         let detailModal;
 
         window.onload = async () => {
             detailModal = new bootstrap.Modal(document.getElementById('productDetailModal'));
-            await loadProducts();
-            updateHeader();
+            await fetchProducts();
+            checkUser();
+            updateHeaderCount();
         };
 
-        async function loadProducts() {
+        // 1. Tải toàn bộ sản phẩm từ API
+        async function fetchProducts() {
             try {
                 const res = await fetch(`${API_URL}/products`);
                 allProducts = await res.json();
-                filteredProducts = allProducts;
-                renderProducts();
-            } catch(e) { console.log(e); }
+                renderGrid(allProducts); // Hiển thị tất cả ban đầu
+            } catch(e) { console.error("Lỗi tải:", e); }
         }
 
-        function renderProducts() {
+        // 2. Hàm lọc sản phẩm (LOGIC QUAN TRỌNG)
+        function filterProducts() {
+            // Lấy giá trị từ các ô nhập
+            const keyword = document.getElementById('search-keyword').value.toLowerCase().trim();
+            let minPrice = document.getElementById('min-price').value;
+            let maxPrice = document.getElementById('max-price').value;
+
+            // Xử lý nếu khách không nhập giá (để trống)
+            if (minPrice === "") minPrice = 0;
+            if (maxPrice === "") maxPrice = 999999999; // Số cực lớn
+
+            minPrice = Number(minPrice);
+            maxPrice = Number(maxPrice);
+
+            // Lọc danh sách
+            const filteredData = allProducts.filter(p => {
+                const matchName = p.name.toLowerCase().includes(keyword);
+                const matchPrice = p.price >= minPrice && p.price <= maxPrice;
+                return matchName && matchPrice;
+            });
+
+            renderGrid(filteredData);
+        }
+
+        // 3. Reset bộ lọc về mặc định
+        function resetFilter() {
+            document.getElementById('search-keyword').value = "";
+            document.getElementById('min-price').value = "";
+            document.getElementById('max-price').value = "";
+            renderGrid(allProducts);
+        }
+
+        // 4. Hiển thị lưới sản phẩm
+        function renderGrid(products) {
             const container = document.getElementById('product-list');
+            const noResult = document.getElementById('no-result');
+            const countSpan = document.getElementById('result-count');
+            
             container.innerHTML = '';
-            const start = (currentPage - 1) * itemsPerPage;
-            const viewData = filteredProducts.slice(start, start + itemsPerPage);
+            countSpan.innerText = products.length;
 
-            if(viewData.length === 0) { container.innerHTML = '<p class="text-muted w-100">Không tìm thấy...</p>'; return; }
+            if (products.length === 0) {
+                noResult.classList.remove('d-none');
+                return;
+            } else {
+                noResult.classList.add('d-none');
+            }
 
-            viewData.forEach(p => {
-                container.innerHTML += `
+            container.innerHTML = products.map(p => `
                 <div class="col-md-3 col-6">
                     <div class="product-card" onclick="showDetail('${p._id}')">
-                        <img src="${p.image}" alt="${p.name}">
-                        <div class="text-start">
-                            <div class="text-muted small">${p.category || 'Khác'}</div>
-                            <h6 class="fw-bold text-truncate">${p.name}</h6>
-                            <div class="star-rating mb-1">
-                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                            </div>
-                            <div class="text-danger fw-bold fs-5">${Number(p.price).toLocaleString()}đ</div>
-                        </div>
-                        <button onclick="event.stopPropagation(); addToCart('${p._id}', '${p.name}', ${p.price}, '${p.image}')" class="btn btn-dark w-100 mt-2 btn-sm rounded-pill"><i class="fas fa-shopping-bag me-1"></i> Mua ngay</button>
+                        <img src="${p.image}" onerror="this.src='${DEFAULT_IMG}'">
+                        <div class="text-muted small">${p.category || 'Khác'}</div>
+                        <h6 class="fw-bold text-truncate">${p.name}</h6>
+                        <div class="text-danger fw-bold fs-5">${Number(p.price).toLocaleString()}đ</div>
+                        <button onclick="event.stopPropagation(); addToCart('${p._id}', '${p.name}', ${p.price}, '${p.image}')" class="btn btn-dark w-100 mt-2 btn-sm rounded-pill"><i class="fas fa-shopping-bag me-1"></i> Mua</button>
                     </div>
-                </div>`;
-            });
-            renderPagination();
+                </div>
+            `).join('');
         }
 
+        // --- Các hàm phụ trợ (Giỏ hàng, User...) ---
         function showDetail(id) {
             const p = allProducts.find(x => x._id === id);
             if(p) {
                 document.getElementById('modal-img').src = p.image;
                 document.getElementById('modal-name').innerText = p.name;
                 document.getElementById('modal-price').innerText = Number(p.price).toLocaleString() + 'đ';
-                
-                // Reset sự kiện onclick cũ
                 const btn = document.getElementById('modal-add-btn');
-                btn.onclick = () => {
-                    addToCart(p._id, p.name, p.price, p.image);
-                    detailModal.hide();
-                };
-                
+                btn.onclick = () => { addToCart(p._id, p.name, p.price, p.image); detailModal.hide(); };
                 detailModal.show();
             }
         }
 
-        function renderPagination() {
-            const div = document.getElementById('pagination');
-            div.innerHTML = '';
-            const total = Math.ceil(filteredProducts.length / itemsPerPage);
-            if(total <= 1) return;
-            for(let i=1; i<=total; i++) div.innerHTML += `<button onclick="currentPage=${i};renderProducts();window.scrollTo(0,0)" class="btn btn-sm ${i===currentPage?'btn-primary':'btn-light'} mx-1">${i}</button>`;
-        }
-
-        function handleFilter() {
-            const key = document.getElementById('search-input').value.toLowerCase();
-            const cat = document.querySelector('.filter-btn.active').innerText;
-            filteredProducts = allProducts.filter(p => p.name.toLowerCase().includes(key) && (cat === 'Tất cả' || p.category === cat));
-            currentPage = 1; renderProducts();
-        }
-
-        function filterCategory(cat, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            handleFilter();
-        }
-
-        // --- HÀM ADD TO CART ĐÃ SỬA: CHẶN USER CHƯA ĐĂNG NHẬP ---
-        function addToCart(id, n, p, i) {
-            // 1. Kiểm tra đăng nhập trước
+        function addToCart(id, name, price, image) {
             const user = JSON.parse(localStorage.getItem('user'));
             if (!user) {
-                if(confirm("Bạn cần đăng nhập để mua hàng. Đến trang đăng nhập ngay?")) {
-                    window.location.href = "login.html";
-                }
-                return; // Dừng lại ở đây
+                if(confirm("Bạn cần Đăng Nhập để mua hàng. Chuyển đến trang đăng nhập?")) window.location.href = "login.html";
+                return;
             }
-
-            // 2. Nếu đã đăng nhập thì mới cho thêm
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            let item = cart.find(x => x.id === id);
-            if(item) item.quantity++; else cart.push({id, name:n, price:p, image:i, quantity:1});
+            let item = cart.find(i => i.id === id);
+            if(item) item.quantity++; else cart.push({id, name, price, image, quantity:1});
             localStorage.setItem('cart', JSON.stringify(cart));
-            updateHeader();
+            updateHeaderCount();
             alert("Đã thêm vào giỏ!");
         }
-        // ---------------------------------------------------------
 
-        function updateHeader() {
+        function updateHeaderCount() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             document.getElementById('cart-count').innerText = cart.reduce((s,i)=>s+i.quantity,0);
+        }
+
+        function checkUser() {
             const user = JSON.parse(localStorage.getItem('user'));
-            if(user) document.getElementById('auth-links').innerHTML = `Hi, <b>${user.username}</b> <a href="#" onclick="logout()" class="ms-1 text-warning">(Thoát)</a>`;
+            if(user) document.getElementById('auth-links').innerHTML = `Hi, <b>${user.username}</b> <a href="change-password.html"><i class="fas fa-key text-white mx-2"></i></a> <a href="#" onclick="logout()" class="text-warning">(Thoát)</a>`;
         }
         function logout() { localStorage.removeItem('user'); location.reload(); }
     </script>
