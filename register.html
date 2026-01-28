@@ -8,12 +8,18 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
-        .auth-card { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .btn-auth { background: linear-gradient(90deg, #5b42f3, #7a5af8); color: white; border: none; font-weight: bold; }
-        .btn-auth:hover { opacity: 0.9; color: white; }
-        .top-header { background: linear-gradient(90deg, #5b42f3, #7a5af8); padding: 10px 0; color: white; text-align: center; font-weight: bold; font-size: 1.5rem; }
+        body { font-family: 'Poppins', sans-serif; background-color: #f0f2f5; }
+        .auth-card { max-width: 450px; margin: 50px auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .btn-auth { background: linear-gradient(90deg, #5b42f3, #7a5af8); color: white; border: none; font-weight: bold; transition: 0.3s; }
+        .btn-auth:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(91, 66, 243, 0.3); color: white; }
+        .top-header { background: linear-gradient(90deg, #5b42f3, #7a5af8); padding: 15px 0; color: white; text-align: center; font-weight: bold; font-size: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         a { text-decoration: none; }
+        
+        /* Style cho ô nhập liệu có icon */
+        .input-group-text { background: #f8f9fa; border-right: none; color: #6c757d; }
+        .form-control { border-left: none; background: #f8f9fa; }
+        .form-control:focus { box-shadow: none; border-color: #ced4da; background: white; }
+        .input-group:focus-within .input-group-text { background: white; border-color: #ced4da; color: #5b42f3; }
     </style>
 </head>
 <body>
@@ -22,25 +28,48 @@
 
     <div class="container">
         <div class="auth-card">
-            <h3 class="text-center fw-bold mb-4">Đăng Ký Thành Viên</h3>
+            <h3 class="text-center fw-bold mb-4" style="color: #333;">Đăng Ký Thành Viên</h3>
+            <p class="text-center text-muted mb-4">Tạo tài khoản để nhận ưu đãi ngay hôm nay!</p>
+            
             <form id="register-form">
+                
                 <div class="mb-3">
-                    <label class="form-label">Tên hiển thị (Tên người dùng)</label>
-                    <input type="text" id="username" class="form-control" required placeholder="Ví dụ: Nguyễn Văn A">
+                    <label class="form-label fw-bold small">Tên hiển thị</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input type="text" id="username" class="form-control" required placeholder="Ví dụ: Nguyễn Văn A">
+                    </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Số điện thoại (Dùng để đăng nhập)</label>
-                    <input type="text" id="phone" class="form-control" required placeholder="Nhập số điện thoại...">
+                    <label class="form-label fw-bold small">Số điện thoại (Dùng đăng nhập)</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
+                        <input type="text" id="phone" class="form-control" required placeholder="Nhập số điện thoại...">
+                    </div>
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">Mật khẩu</label>
-                    <input type="password" id="password" class="form-control" required placeholder="Nhập mật khẩu...">
+                    <label class="form-label fw-bold small">Mật khẩu</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input type="password" id="password" class="form-control" required placeholder="Nhập mật khẩu...">
+                    </div>
                 </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold small">Xác nhận mật khẩu</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-check-circle"></i></span>
+                        <input type="password" id="confirm-password" class="form-control" required placeholder="Nhập lại mật khẩu bên trên...">
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-auth w-100 py-2 rounded-pill">ĐĂNG KÝ NGAY</button>
             </form>
-            <div class="text-center mt-3">
-                <small>Đã có tài khoản? <a href="login.html" class="text-primary fw-bold">Đăng nhập</a></small>
+
+            <div class="text-center mt-4">
+                <small>Bạn đã có tài khoản? <a href="login.html" class="text-primary fw-bold">Đăng nhập ngay</a></small>
             </div>
         </div>
     </div>
@@ -52,11 +81,18 @@
             e.preventDefault();
             
             const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
             const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const confirmPass = document.getElementById('confirm-password').value.trim();
 
             if (!username || !password || !phone) {
                 alert("Vui lòng nhập đầy đủ thông tin!");
+                return;
+            }
+
+            // Kiểm tra mật khẩu nhập lại
+            if (password !== confirmPass) {
+                alert("❌ Mật khẩu xác nhận không khớp! Vui lòng nhập lại.");
                 return;
             }
 
@@ -74,7 +110,7 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    alert("✅ Đăng ký thành công! Hãy dùng SỐ ĐIỆN THOẠI vừa rồi để đăng nhập.");
+                    alert("✅ Đăng ký thành công! Hãy dùng SĐT để đăng nhập.");
                     window.location.href = "login.html";
                 } else {
                     alert("❌ Lỗi: " + (data.message || "Tên hoặc SĐT đã tồn tại!"));
