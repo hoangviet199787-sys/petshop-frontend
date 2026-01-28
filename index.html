@@ -174,9 +174,10 @@
         window.onload = async () => {
             detailModal = new bootstrap.Modal(document.getElementById('productDetailModal'));
             await loadProducts();
-            updateHeader();
+            updateHeader(); // Cập nhật giỏ hàng và menu user
         };
 
+        // 1. TẢI SẢN PHẨM TỪ API
         async function loadProducts() {
             try {
                 const res = await fetch(`${API_URL}/products`);
@@ -188,7 +189,7 @@
                 renderGrid('hot-products', hotProducts, true);
                 renderGrid('new-products', newProducts, false);
 
-            } catch(e) { console.log(e); }
+            } catch(e) { console.log("Lỗi tải sản phẩm:", e); }
         }
 
         function renderGrid(containerId, products, isHot) {
@@ -197,7 +198,7 @@
                 <div class="col-md-3 col-6">
                     <div class="product-card" onclick="showDetail('${p._id}')">
                         ${isHot ? '<div class="badge-hot">HOT</div>' : ''}
-                        <img src="${p.image}" alt="${p.name}">
+                        <img src="${p.image}" alt="${p.name}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3047/3047928.png'">
                         <div class="text-muted small">${p.category || 'Khác'}</div>
                         <h6 class="fw-bold text-truncate">${p.name}</h6>
                         <div class="star-rating mb-2"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
@@ -208,6 +209,7 @@
             `).join('');
         }
 
+        // 2. XEM CHI TIẾT
         function showDetail(id) {
             const p = allProducts.find(x => x._id === id);
             if(p) {
@@ -220,19 +222,16 @@
             }
         }
 
-        // --- HÀM ADD TO CART ĐÃ SỬA: CHẶN KHI CHƯA ĐĂNG NHẬP ---
+        // 3. THÊM VÀO GIỎ HÀNG (YÊU CẦU ĐĂNG NHẬP)
         function addToCart(id, name, price, image) {
-            // 1. Kiểm tra đăng nhập
             const user = JSON.parse(localStorage.getItem('user'));
             if (!user) {
-                // Nếu chưa đăng nhập -> Hỏi user
                 if(confirm("Bạn cần Đăng Nhập để mua hàng. Chuyển đến trang đăng nhập?")) {
                     window.location.href = "login.html";
                 }
-                return; // Dừng lại, không cho thêm vào giỏ
+                return;
             }
 
-            // 2. Nếu đã đăng nhập -> Thêm vào giỏ bình thường
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             let item = cart.find(i => i.id === id);
             if(item) item.quantity++; else cart.push({id, name, price, image, quantity:1});
@@ -240,15 +239,31 @@
             updateHeader();
             alert("Đã thêm " + name + " vào giỏ!");
         }
-        // ---------------------------------------------------------
 
+        // 4. CẬP NHẬT HEADER (SỐ LƯỢNG GIỎ & MENU USER)
         function updateHeader() {
+            // Cập nhật số lượng giỏ hàng
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             document.getElementById('cart-count').innerText = cart.reduce((s,i)=>s+i.quantity,0);
+
+            // Cập nhật Menu User (Đã thêm nút Đổi Mật Khẩu)
             const user = JSON.parse(localStorage.getItem('user'));
-            if(user) document.getElementById('auth-links').innerHTML = `Hi, <b>${user.username}</b> <a href="#" onclick="logout()" class="ms-1 text-warning">(Thoát)</a>`;
+            if(user) {
+                const authDiv = document.getElementById('auth-links');
+                authDiv.innerHTML = `
+                    <span class="text-white">Hi, <b>${user.username}</b></span>
+                    <span class="mx-2">|</span>
+                    <a href="change-password.html" class="text-white text-decoration-none" title="Đổi mật khẩu"><i class="fas fa-key"></i></a>
+                    <span class="mx-2">|</span>
+                    <a href="#" onclick="logout()" class="text-warning text-decoration-none fw-bold">(Thoát)</a>
+                `;
+            }
         }
-        function logout() { localStorage.removeItem('user'); location.reload(); }
+
+        function logout() { 
+            localStorage.removeItem('user'); 
+            location.reload(); 
+        }
     </script>
 </body>
 </html>
