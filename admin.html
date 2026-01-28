@@ -21,27 +21,24 @@
         /* MAIN CONTENT */
         .main-content { margin-left: 250px; padding: 30px; }
         
-        /* HIỆU ỨNG CHUYỂN TAB */
+        /* TAB & TABLE */
         .tab-section { display: none; } 
         .tab-section.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .table img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; }
+        .table td { vertical-align: middle; }
 
-        /* CARDS & TABLES */
+        /* PAGINATION */
+        #pagination button { background: white; border: 1px solid #dee2e6; color: #333; padding: 5px 12px; margin: 0 2px; border-radius: 4px; transition: 0.2s; }
+        #pagination button:hover { background: #e9ecef; }
+        #pagination button.active { background: #0d6efd; color: white; border-color: #0d6efd; }
+        
+        /* CARDS */
         .stat-card { border: none; border-radius: 15px; padding: 25px; color: white; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .bg-gradient-primary { background: linear-gradient(45deg, #4e73df, #224abe); }
         .bg-gradient-success { background: linear-gradient(45deg, #1cc88a, #13855c); }
         .bg-gradient-warning { background: linear-gradient(45deg, #f6c23e, #dda20a); }
-        .table img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
-
-        /* BADGES TRẠNG THÁI */
-        .status-pending { background: #fff3cd; color: #856404; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
-        .status-shipping { background: #cce5ff; color: #004085; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
-        .status-done { background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
-        .status-cancel { background: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
-
-        /* PAGINATION */
-        #pagination button { background: white; border: 1px solid #dee2e6; color: #0d6efd; padding: 5px 12px; margin: 0 2px; border-radius: 4px; }
-        #pagination button.active { background: #0d6efd; color: white; }
     </style>
 </head>
 <body>
@@ -61,9 +58,6 @@
             <a href="index.html" class="nav-link text-warning mt-5">
                 <i class="fas fa-external-link-alt me-2"></i> Xem Web Chính
             </a>
-            <button class="nav-link text-danger" onclick="resetSystem()">
-                <i class="fas fa-trash-restore me-2"></i> Reset Dữ Liệu Demo
-            </button>
         </div>
     </div>
 
@@ -85,23 +79,29 @@
         <div id="products-tab" class="tab-section">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="fw-bold">📦 Kho hàng</h3>
-                <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus-circle"></i> Thêm món mới</button>
+                <div>
+                    <button class="btn btn-success me-2" onclick="syncFromAPI()">
+                        <i class="fas fa-sync-alt"></i> Lấy 41 SP từ Server về
+                    </button>
+                    <button class="btn btn-primary" onclick="openAddModal()">
+                        <i class="fas fa-plus-circle"></i> Thêm món mới
+                    </button>
+                </div>
             </div>
             <div class="card p-4 shadow-sm">
                 <table class="table table-hover align-middle">
                     <thead class="table-dark"><tr><th>Ảnh</th><th>Tên sản phẩm</th><th>Giá</th><th>Danh mục</th><th>Hành động</th></tr></thead>
                     <tbody id="product-list"></tbody>
                 </table>
-                <div id="pagination" class="d-flex justify-content-center mt-3"></div>
+                <div id="pagination" class="d-flex justify-content-center mt-3 gap-2"></div>
             </div>
         </div>
 
         <div id="orders-tab" class="tab-section">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="fw-bold">📋 Danh sách đơn hàng</h3>
-                <button class="btn btn-sm btn-danger" onclick="clearOrders()"><i class="fas fa-trash"></i> Xóa tất cả đơn</button>
+                <button class="btn btn-sm btn-danger" onclick="clearOrders()"><i class="fas fa-trash"></i> Xóa tất cả</button>
             </div>
-            
             <div class="card p-3 shadow-sm">
                 <table class="table table-hover align-middle">
                     <thead class="bg-light"><tr><th>Mã</th><th>Khách</th><th>Chi tiết</th><th>Tổng tiền</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
@@ -120,27 +120,15 @@
                 <div class="modal-body">
                     <form id="productForm">
                         <input type="hidden" id="p-id">
-                        <div class="mb-3">
-                            <label class="form-label">Tên sản phẩm</label>
-                            <input type="text" class="form-control" id="p-name" required placeholder="Nhập tên món hàng...">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Giá (VNĐ)</label>
-                            <input type="number" class="form-control" id="p-price" required placeholder="Nhập số tiền...">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Link Ảnh</label>
-                            <input type="text" class="form-control" id="p-image" required placeholder="Dán link ảnh vào đây...">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Danh mục</label>
+                        <div class="mb-3"><label class="form-label">Tên sản phẩm</label><input type="text" class="form-control" id="p-name" required></div>
+                        <div class="mb-3"><label class="form-label">Giá (VNĐ)</label><input type="number" class="form-control" id="p-price" required></div>
+                        <div class="mb-3"><label class="form-label">Link Ảnh</label><input type="text" class="form-control" id="p-image" required></div>
+                        <div class="mb-3"><label class="form-label">Danh mục</label>
                             <select class="form-select" id="p-category">
-                                <option value="Thức ăn">Thức ăn</option>
-                                <option value="Phụ kiện">Phụ kiện</option>
-                                <option value="Vệ sinh">Vệ sinh</option>
+                                <option value="Thức ăn">Thức ăn</option><option value="Phụ kiện">Phụ kiện</option><option value="Vệ sinh">Vệ sinh</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 fw-bold" id="btnSave">LƯU SẢN PHẨM</button>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold" id="btnSave">LƯU</button>
                     </form>
                 </div>
             </div>
@@ -149,46 +137,67 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // --- CẤU HÌNH HỆ THỐNG (LOCAL STORAGE) ---
-        // Chúng ta không dùng API nữa mà dùng bộ nhớ trình duyệt để Demo mượt mà
-        
-        // Dữ liệu mẫu ban đầu nếu kho hàng trống
-        const INITIAL_PRODUCTS = [
-            { id: 'sp1', name: 'Thức ăn hạt Royal Canin', price: 150000, category: 'Thức ăn', image: 'https://cdn.pixabay.com/photo/2020/06/02/06/52/cat-food-5249714_1280.jpg' },
-            { id: 'sp2', name: 'Vòng cổ lục lạc', price: 50000, category: 'Phụ kiện', image: 'https://cdn.pixabay.com/photo/2014/04/05/11/40/dog-316598_1280.jpg' },
-            { id: 'sp3', name: 'Cát vệ sinh Nhật Bản', price: 120000, category: 'Vệ sinh', image: 'https://bizweb.dktcdn.net/thumb/1024x1024/100/393/819/products/cat-nhat-den-8l-ve-sinh-cho-meo.jpg' },
-            { id: 'sp4', name: 'Pate Whiskas', price: 35000, category: 'Thức ăn', image: 'https://bizweb.dktcdn.net/100/414/018/products/pate-whiskas-cho-meo-lon-vi-ca-ngu-85g.jpg' }
-        ];
-
+        // --- 1. BIẾN TOÀN CỤC & CẤU HÌNH ---
         let productModalBox;
+        let currentPage = 1;
+        const itemsPerPage = 6; // Số sản phẩm mỗi trang
 
         document.addEventListener('DOMContentLoaded', () => {
             productModalBox = new bootstrap.Modal(document.getElementById('productModal'));
+            loadDashboard();
             
-            // Khởi tạo dữ liệu mẫu nếu chưa có
+            // Nếu chưa có dữ liệu, tự tạo mẫu 4 món
             if (!localStorage.getItem('adminProducts')) {
-                localStorage.setItem('adminProducts', JSON.stringify(INITIAL_PRODUCTS));
+                localStorage.setItem('adminProducts', JSON.stringify([
+                    { id: 'sp1', name: 'Sample 1', price: 10000, category: 'Khác', image: 'https://via.placeholder.com/50' }
+                ]));
             }
-
-            loadDashboard(); // Mặc định tải dashboard
         });
 
-        // 1. CHUYỂN TAB
-        function switchTab(event, tabId) {
-            document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+        // --- 2. HÀM ĐỒNG BỘ 41 SẢN PHẨM TỪ SERVER (QUAN TRỌNG) ---
+        async function syncFromAPI() {
+            if(!confirm("Hành động này sẽ tải toàn bộ sản phẩm từ Server về Admin. Tiếp tục?")) return;
+            
+            try {
+                // Gọi API lấy 41 sản phẩm thật
+                const res = await fetch("https://petshop-api-3uon.onrender.com/api/products");
+                const data = await res.json();
+                
+                // Chuyển đổi định dạng để lưu vào LocalStorage
+                const formattedData = data.map(p => ({
+                    id: p._id,
+                    name: p.name,
+                    price: p.price,
+                    category: p.category || "Khác",
+                    image: p.image
+                }));
+
+                // Lưu vào bộ nhớ máy
+                localStorage.setItem('adminProducts', JSON.stringify(formattedData));
+                
+                alert("✅ Đã khôi phục thành công " + formattedData.length + " sản phẩm!");
+                location.reload(); // Tải lại trang để thấy kết quả
+            } catch (err) {
+                alert("❌ Lỗi kết nối Server: " + err);
+            }
         }
 
-        // 2. QUẢN LÝ SẢN PHẨM (KHO HÀNG)
+        // --- 3. QUẢN LÝ SẢN PHẨM & PHÂN TRANG (ĐÃ SỬA) ---
         function loadProducts() {
             const products = JSON.parse(localStorage.getItem('adminProducts')) || [];
             const tbody = document.getElementById('product-list');
             tbody.innerHTML = '';
 
-            // Phân trang đơn giản (Hiện tất cả cho demo dễ)
-            products.forEach(p => {
+            // Tính toán phân trang
+            const totalPages = Math.ceil(products.length / itemsPerPage);
+            if (currentPage > totalPages) currentPage = 1; // Reset nếu trang hiện tại quá lớn
+            
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const viewData = products.slice(start, end);
+
+            // Vẽ bảng
+            viewData.forEach(p => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><img src="${p.image}" onerror="this.src='https://via.placeholder.com/50'"></td>
@@ -203,44 +212,33 @@
                 tbody.appendChild(row);
             });
             document.getElementById('stat-products').innerText = products.length;
+
+            // Vẽ nút phân trang
+            renderPagination(totalPages);
         }
 
-        // Mở Modal Thêm
-        function openAddModal() {
-            document.getElementById('productForm').reset();
-            document.getElementById('p-id').value = '';
-            document.getElementById('modalTitle').innerText = "Thêm Mới";
-            document.getElementById('btnSave').innerText = "LƯU SẢN PHẨM";
-            document.getElementById('btnSave').className = "btn btn-primary w-100 fw-bold";
-            productModalBox.show();
-        }
+        function renderPagination(totalPages) {
+            const container = document.getElementById('pagination');
+            container.innerHTML = '';
+            
+            if (totalPages <= 1) return; // Ít quá thì ẩn luôn
 
-        // Mở Modal Sửa
-        function openEditModal(id) {
-            const products = JSON.parse(localStorage.getItem('adminProducts')) || [];
-            const p = products.find(x => x.id === id);
-            if(p) {
-                document.getElementById('p-id').value = p.id;
-                document.getElementById('p-name').value = p.name;
-                document.getElementById('p-price').value = p.price;
-                document.getElementById('p-image').value = p.image;
-                document.getElementById('p-category').value = p.category;
-
-                document.getElementById('modalTitle').innerText = "Sửa Sản Phẩm";
-                document.getElementById('btnSave').innerText = "CẬP NHẬT";
-                document.getElementById('btnSave').className = "btn btn-warning w-100 fw-bold";
-                productModalBox.show();
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.innerText = i;
+                if (i === currentPage) btn.classList.add('active');
+                btn.onclick = () => { currentPage = i; loadProducts(); };
+                container.appendChild(btn);
             }
         }
 
-        // Lưu sản phẩm (Thêm hoặc Sửa)
+        // --- 4. THÊM / SỬA / XÓA ---
         document.getElementById('productForm').addEventListener('submit', (e) => {
             e.preventDefault();
             let products = JSON.parse(localStorage.getItem('adminProducts')) || [];
             const id = document.getElementById('p-id').value;
-            
-            const newProduct = {
-                id: id || 'sp' + Date.now(), // Nếu không có ID thì tạo mới
+            const newProd = {
+                id: id || 'new' + Date.now(),
                 name: document.getElementById('p-name').value,
                 price: Number(document.getElementById('p-price').value),
                 image: document.getElementById('p-image').value,
@@ -248,148 +246,110 @@
             };
 
             if(id) {
-                // Sửa
-                const index = products.findIndex(p => p.id === id);
-                if(index !== -1) products[index] = newProduct;
+                const idx = products.findIndex(p => p.id === id);
+                if(idx !== -1) products[idx] = newProd;
             } else {
-                // Thêm mới
-                products.push(newProduct);
+                products.unshift(newProd); // Thêm lên đầu
             }
-
             localStorage.setItem('adminProducts', JSON.stringify(products));
             productModalBox.hide();
             loadProducts();
-            alert("Đã lưu thành công!");
         });
 
-        // Xóa sản phẩm
         function deleteProduct(id) {
-            if(confirm("Bạn chắc chắn muốn xóa?")) { 
+            if(confirm("Xóa sản phẩm này?")) {
                 let products = JSON.parse(localStorage.getItem('adminProducts')) || [];
                 products = products.filter(p => p.id !== id);
                 localStorage.setItem('adminProducts', JSON.stringify(products));
                 loadProducts();
             }
         }
+        
+        function openAddModal() {
+            document.getElementById('productForm').reset();
+            document.getElementById('p-id').value = '';
+            productModalBox.show();
+        }
+        
+        function openEditModal(id) {
+            const p = JSON.parse(localStorage.getItem('adminProducts')).find(x => x.id === id);
+            if(p) {
+                document.getElementById('p-id').value = p.id;
+                document.getElementById('p-name').value = p.name;
+                document.getElementById('p-price').value = p.price;
+                document.getElementById('p-image').value = p.image;
+                document.getElementById('p-category').value = p.category;
+                productModalBox.show();
+            }
+        }
 
-        // 3. QUẢN LÝ ĐƠN HÀNG (Kết nối với Cart.html)
+        // --- 5. QUẢN LÝ ĐƠN HÀNG & DASHBOARD ---
+        function switchTab(event, tabId) {
+            document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
         function loadOrders() {
-            // LẤY DỮ LIỆU TỪ LOCALSTORAGE (CHÌA KHÓA QUAN TRỌNG)
             const orders = JSON.parse(localStorage.getItem('allOrders')) || [];
             const tbody = document.getElementById('order-table-body');
             const emptyMsg = document.getElementById('empty-order-msg');
-            
             tbody.innerHTML = '';
-
-            if (orders.length === 0) {
-                emptyMsg.classList.remove('d-none');
-                return;
-            } else {
-                emptyMsg.classList.add('d-none');
-            }
-
-            orders.forEach((order, index) => {
-                // Tạo tóm tắt món hàng
-                let summary = order.items.map(i => `${i.name} (x${i.quantity})`).join('<br>');
-                
-                // Class trạng thái
-                let badgeClass = '';
-                let statusText = '';
-                if(order.status === 'pending') { badgeClass = 'status-pending'; statusText = '⏳ Chờ xử lý'; }
-                else if(order.status === 'shipping') { badgeClass = 'status-shipping'; statusText = '🚚 Đang giao'; }
-                else if(order.status === 'done') { badgeClass = 'status-done'; statusText = '✅ Hoàn thành'; }
-                else { badgeClass = 'status-cancel'; statusText = '❌ Đã hủy'; }
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="fw-bold text-primary">#${order.id}</td>
-                    <td>
-                        <div class="fw-bold">${order.customer}</div>
-                        <small class="text-muted">${order.phone}</small>
-                    </td>
-                    <td><small>${summary}</small></td>
-                    <td class="text-danger fw-bold">${Number(order.total).toLocaleString()}đ</td>
-                    <td><span class="${badgeClass}">${statusText}</span></td>
-                    <td>
-                        <div class="d-flex gap-1">
-                            <button class="btn btn-sm btn-primary" onclick="updateStatus(${index}, 'shipping')" title="Giao hàng"><i class="fas fa-truck"></i></button>
-                            <button class="btn btn-sm btn-success" onclick="updateStatus(${index}, 'done')" title="Hoàn thành"><i class="fas fa-check"></i></button>
-                            <button class="btn btn-sm btn-secondary" onclick="updateStatus(${index}, 'cancel')" title="Hủy"><i class="fas fa-times"></i></button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-
-            // Cập nhật thống kê
-            updateDashboardStats(orders);
-        }
-
-        // Cập nhật trạng thái đơn
-        function updateStatus(index, newStatus) {
-            let orders = JSON.parse(localStorage.getItem('allOrders')) || [];
-            orders[index].status = newStatus;
-            localStorage.setItem('allOrders', JSON.stringify(orders));
-            loadOrders(); // Vẽ lại bảng
-            loadDashboard(); // Cập nhật thống kê
-        }
-
-        function clearOrders() {
-            if(confirm("Xóa sạch lịch sử đơn hàng?")) {
-                localStorage.removeItem('allOrders');
-                loadOrders();
-                loadDashboard();
-            }
-        }
-
-        // 4. DASHBOARD & THỐNG KÊ
-        function loadDashboard() {
-            const orders = JSON.parse(localStorage.getItem('allOrders')) || [];
-            const products = JSON.parse(localStorage.getItem('adminProducts')) || [];
             
-            // Tính tổng doanh thu (chỉ tính đơn hoàn thành)
-            const revenue = orders
-                .filter(o => o.status === 'done')
-                .reduce((sum, o) => sum + o.total, 0);
+            if (orders.length === 0) emptyMsg.classList.remove('d-none');
+            else emptyMsg.classList.add('d-none');
 
-            document.getElementById('stat-revenue').innerText = revenue.toLocaleString() + 'đ';
-            document.getElementById('stat-orders').innerText = orders.length;
-            document.getElementById('stat-products').innerText = products.length;
-
-            // Vẽ bảng đơn hàng mới nhất (Lấy 5 đơn đầu)
-            const recentBody = document.getElementById('recent-orders-body');
-            recentBody.innerHTML = '';
-            orders.slice(0, 5).forEach(o => {
-                let badgeClass = o.status === 'done' ? 'bg-success' : (o.status === 'pending' ? 'bg-warning text-dark' : 'bg-secondary');
-                let statusText = o.status === 'done' ? 'Hoàn thành' : (o.status === 'pending' ? 'Chờ xử lý' : o.status);
+            orders.forEach((o, i) => {
+                let statusBadge = o.status==='done'?'bg-success':(o.status==='pending'?'bg-warning text-dark':'bg-secondary');
+                let statusText = o.status==='done'?'Hoàn thành':(o.status==='pending'?'Chờ xử lý':'Đã hủy');
                 
-                recentBody.innerHTML += `
+                tbody.innerHTML += `
                     <tr>
-                        <td>#${o.id}</td>
-                        <td>${o.customer}</td>
-                        <td class="fw-bold">${Number(o.total).toLocaleString()}đ</td>
-                        <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                        <td class="fw-bold text-primary">#${o.id}</td>
+                        <td>${o.customer}<br><small>${o.phone}</small></td>
+                        <td><small>${o.items.map(x=>x.name).join(', ')}</small></td>
+                        <td class="fw-bold text-danger">${Number(o.total).toLocaleString()}đ</td>
+                        <td><span class="badge ${statusBadge}">${statusText}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-success" onclick="updateOrderStatus(${i}, 'done')"><i class="fas fa-check"></i></button>
+                            <button class="btn btn-sm btn-secondary" onclick="updateOrderStatus(${i}, 'cancel')"><i class="fas fa-times"></i></button>
+                        </td>
                     </tr>
                 `;
             });
+            updateStats();
         }
 
-        function updateDashboardStats(orders) {
-            // Hàm phụ trợ update số liệu khi đang ở tab Orders
+        function updateOrderStatus(idx, st) {
+            let orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+            orders[idx].status = st;
+            localStorage.setItem('allOrders', JSON.stringify(orders));
+            loadOrders();
+        }
+        
+        function clearOrders() {
+            if(confirm("Xóa hết đơn hàng?")) { localStorage.removeItem('allOrders'); loadOrders(); }
+        }
+
+        function loadDashboard() { updateStats(); }
+        
+        function updateStats() {
+            const orders = JSON.parse(localStorage.getItem('allOrders')) || [];
             const products = JSON.parse(localStorage.getItem('adminProducts')) || [];
+            const revenue = orders.filter(o=>o.status==='done').reduce((s,o)=>s+o.total,0);
+            
+            document.getElementById('stat-revenue').innerText = revenue.toLocaleString() + 'đ';
             document.getElementById('stat-orders').innerText = orders.length;
             document.getElementById('stat-products').innerText = products.length;
+            
+            // Recent Orders
+            const recent = document.getElementById('recent-orders-body');
+            recent.innerHTML = '';
+            orders.slice(0,5).forEach(o => {
+                recent.innerHTML += `<tr><td>#${o.id}</td><td>${o.customer}</td><td class="fw-bold">${Number(o.total).toLocaleString()}đ</td><td>${o.status}</td></tr>`;
+            });
         }
-
-        function resetSystem() {
-            if(confirm("Cảnh báo: Hành động này sẽ xóa sạch Sản phẩm và Đơn hàng về mặc định. Tiếp tục?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-
-        // Tự động tải đơn hàng khi vào tab Order
-        // (Đã xử lý trong hàm switchTab không cần nữa, hoặc gọi trực tiếp ở onclick)
     </script>
 </body>
 </html>
