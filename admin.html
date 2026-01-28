@@ -10,35 +10,28 @@
 
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; }
-        
-        /* SIDEBAR */
         .sidebar { height: 100vh; width: 250px; position: fixed; top: 0; left: 0; background-color: #343a40; padding-top: 20px; color: white; z-index: 1000; }
         .sidebar .nav-link { padding: 15px 25px; font-size: 1rem; color: #cfd8dc; cursor: pointer; transition: 0.3s; border-radius: 0; display: block; width: 100%; text-align: left; background: none; border: none; }
         .sidebar .nav-link:hover { background-color: #495057; color: white; }
         .sidebar .nav-link.active { background-color: #0d6efd; color: white; border-right: 4px solid #fff; }
         .brand { text-align: center; font-size: 1.5rem; font-weight: bold; margin-bottom: 30px; color: #ffc107; text-transform: uppercase; }
-        
-        /* MAIN CONTENT */
         .main-content { margin-left: 250px; padding: 30px; }
-        
-        /* TAB SECTION */
         .tab-section { display: none; } 
         .tab-section.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* TABLE STYLES */
         .table img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
         .table td { vertical-align: middle; }
-        
-        /* PAGINATION */
         #pagination button { background: white; border: 1px solid #dee2e6; color: #333; padding: 5px 12px; margin: 0 2px; border-radius: 4px; }
         #pagination button.active { background: #0d6efd; color: white; border-color: #0d6efd; }
-
-        /* CARDS */
         .stat-card { border: none; border-radius: 15px; padding: 25px; color: white; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .bg-gradient-primary { background: linear-gradient(45deg, #4e73df, #224abe); }
         .bg-gradient-success { background: linear-gradient(45deg, #1cc88a, #13855c); }
         .bg-gradient-warning { background: linear-gradient(45deg, #f6c23e, #dda20a); }
+        /* Badge trạng thái */
+        .status-pending { background: #fff3cd; color: #856404; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
+        .status-shipping { background: #cce5ff; color: #004085; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
+        .status-done { background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
+        .status-cancel { background: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -46,13 +39,13 @@
     <div class="sidebar">
         <div class="brand"><i class="fas fa-paw"></i> Pet Admin</div>
         <div class="nav flex-column">
-            <button class="nav-link active" onclick="switchTab(event, 'dashboard-tab'); fetchStats()">
+            <button class="nav-link active" onclick="switchTab(event, 'dashboard-tab'); loadDashboard()">
                 <i class="fas fa-chart-line me-2"></i> Tổng quan
             </button>
             <button class="nav-link" onclick="switchTab(event, 'products-tab'); loadProducts()">
                 <i class="fas fa-box-open me-2"></i> Kho Hàng
             </button>
-            <button class="nav-link" onclick="switchTab(event, 'orders-tab'); fetchAdminOrders()">
+            <button class="nav-link" onclick="switchTab(event, 'orders-tab'); loadOrders()">
                 <i class="fas fa-shopping-cart me-2"></i> Đơn Hàng
             </button>
             <a href="index.html" class="nav-link text-warning mt-5">
@@ -62,13 +55,12 @@
     </div>
 
     <div class="main-content">
-        
         <div id="dashboard-tab" class="tab-section active">
             <h3 class="mb-4 fw-bold">📊 Tổng quan kinh doanh</h3>
             <div class="row g-4 mb-5">
-                <div class="col-md-4"><div class="stat-card bg-gradient-success"><div><h6>DOANH THU</h6><h2 class="fw-bold mb-0" id="stat-revenue">Loading...</h2></div><i class="fas fa-wallet fa-3x opacity-50"></i></div></div>
-                <div class="col-md-4"><div class="stat-card bg-gradient-primary"><div><h6>TỔNG ĐƠN</h6><h2 class="fw-bold mb-0" id="stat-orders">Loading...</h2></div><i class="fas fa-shopping-bag fa-3x opacity-50"></i></div></div>
-                <div class="col-md-4"><div class="stat-card bg-gradient-warning"><div><h6>SẢN PHẨM</h6><h2 class="fw-bold mb-0" id="stat-products">Loading...</h2></div><i class="fas fa-cubes fa-3x opacity-50"></i></div></div>
+                <div class="col-md-4"><div class="stat-card bg-gradient-success"><div><h6>DOANH THU</h6><h2 class="fw-bold mb-0" id="stat-revenue">0đ</h2></div><i class="fas fa-wallet fa-3x opacity-50"></i></div></div>
+                <div class="col-md-4"><div class="stat-card bg-gradient-primary"><div><h6>TỔNG ĐƠN</h6><h2 class="fw-bold mb-0" id="stat-orders">0</h2></div><i class="fas fa-shopping-bag fa-3x opacity-50"></i></div></div>
+                <div class="col-md-4"><div class="stat-card bg-gradient-warning"><div><h6>SẢN PHẨM</h6><h2 class="fw-bold mb-0" id="stat-products">0</h2></div><i class="fas fa-cubes fa-3x opacity-50"></i></div></div>
             </div>
             <h5>Đơn hàng mới nhất</h5>
             <div class="card p-3 shadow-sm">
@@ -84,20 +76,23 @@
             <div class="card p-4 shadow-sm">
                 <table class="table table-hover align-middle">
                     <thead class="table-dark"><tr><th>Ảnh</th><th>Tên sản phẩm</th><th>Giá</th><th>Danh mục</th><th>Hành động</th></tr></thead>
-                    <tbody id="product-list">
-                        </tbody>
+                    <tbody id="product-list"></tbody>
                 </table>
                 <div id="pagination" class="d-flex justify-content-center mt-3 gap-2"></div>
             </div>
         </div>
 
         <div id="orders-tab" class="tab-section">
-            <h3 class="mb-4 fw-bold">📋 Danh sách đơn hàng</h3>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold">📋 Danh sách đơn hàng</h3>
+                <button class="btn btn-sm btn-danger" onclick="clearOrders()"><i class="fas fa-trash"></i> Xóa tất cả</button>
+            </div>
             <div class="card p-3 shadow-sm">
                 <table class="table table-hover align-middle">
-                    <thead class="bg-light"><tr><th>Mã</th><th>Khách</th><th>Tổng tiền</th><th>Trạng thái</th><th>Ngày</th></tr></thead>
+                    <thead class="bg-light"><tr><th>Mã</th><th>Khách</th><th>Chi tiết</th><th>Tổng tiền</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
                     <tbody id="order-table-body"></tbody>
                 </table>
+                <div id="empty-order-msg" class="text-center text-muted p-3 d-none">Chưa có đơn hàng nào!</div>
             </div>
         </div>
     </div>
@@ -127,18 +122,17 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const API_URL = "https://petshop-api-3uon.onrender.com/api";
+        const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3047/3047928.png"; // Ảnh thế thân
+        
         let productModalBox;
         let allProducts = [];
         let currentPage = 1;
         const itemsPerPage = 6;
         let editingId = null;
 
-        // ẢNH MẶC ĐỊNH CHO BÁO CÁO (Nếu ảnh thật bị lỗi thì hiện ảnh này)
-        const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3047/3047928.png";
-
         document.addEventListener('DOMContentLoaded', () => {
             productModalBox = new bootstrap.Modal(document.getElementById('productModal'));
-            fetchStats();
+            loadDashboard(); // Tải thống kê ngay khi vào
         });
 
         function switchTab(event, tabId) {
@@ -146,39 +140,37 @@
             document.getElementById(tabId).classList.add('active');
             document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
             event.currentTarget.classList.add('active');
+            
+            // Nếu bấm vào tab nào thì tải dữ liệu tab đó
+            if(tabId === 'products-tab') loadProducts();
+            if(tabId === 'orders-tab') loadOrders();
+            if(tabId === 'dashboard-tab') loadDashboard();
         }
 
-        // --- 1. LẤY SẢN PHẨM TỪ SERVER (API) ---
+        // --- 1. SẢN PHẨM (LẤY TỪ SERVER ĐỂ ĐỦ 41 MÓN) ---
         async function loadProducts() {
             try {
-                // Gọi API lấy toàn bộ sản phẩm
-                const res = await fetch(`${API_URL}/products`);
-                allProducts = await res.json();
+                if(allProducts.length === 0) {
+                    const res = await fetch(`${API_URL}/products`);
+                    allProducts = await res.json();
+                }
                 renderTable();
-            } catch (e) { 
-                console.error(e); 
-                alert("Lỗi kết nối Server! F5 thử lại.");
-            }
+            } catch (e) { console.error(e); }
         }
 
         function renderTable() {
             const tbody = document.getElementById('product-list');
             tbody.innerHTML = '';
             
-            // Tính toán phân trang
             const totalPages = Math.ceil(allProducts.length / itemsPerPage);
             if(currentPage > totalPages) currentPage = 1;
-
             const start = (currentPage - 1) * itemsPerPage;
             const viewData = allProducts.slice(start, start + itemsPerPage);
 
             viewData.forEach(p => {
                 const row = document.createElement('tr');
-                // QUAN TRỌNG: Thêm onerror để xử lý ảnh lỗi
                 row.innerHTML = `
-                    <td>
-                        <img src="${p.image}" onerror="this.src='${DEFAULT_IMG}'" alt="sp">
-                    </td>
+                    <td><img src="${p.image}" onerror="this.src='${DEFAULT_IMG}'"></td>
                     <td><b>${p.name}</b></td>
                     <td class="text-danger fw-bold">${Number(p.price).toLocaleString()}đ</td>
                     <td><span class="badge bg-info text-dark">${p.category || 'Khác'}</span></td>
@@ -190,7 +182,7 @@
                 tbody.appendChild(row);
             });
 
-            // Vẽ phân trang
+            // Pagination
             const pagination = document.getElementById('pagination');
             pagination.innerHTML = '';
             for(let i=1; i<=totalPages; i++){
@@ -200,26 +192,86 @@
                 btn.onclick = () => { currentPage = i; renderTable(); };
                 pagination.appendChild(btn);
             }
-            // Cập nhật số lượng hiển thị
             document.getElementById('stat-products').innerText = allProducts.length;
         }
 
-        // --- 2. THÊM / SỬA / XÓA (GỌI API) ---
-        function openAddModal() {
-            editingId = null;
-            document.getElementById('productForm').reset();
-            document.getElementById('modalTitle').innerText = "Thêm Mới";
-            productModalBox.show();
+        // --- 2. ĐƠN HÀNG (LẤY TỪ LOCALSTORAGE ĐỂ KHỚP VỚI GIỎ HÀNG) ---
+        function loadOrders() {
+            // ĐÂY LÀ CHỖ QUAN TRỌNG: Lấy từ LocalStorage thay vì API
+            const orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+            const tbody = document.getElementById('order-table-body');
+            const emptyMsg = document.getElementById('empty-order-msg');
+            
+            tbody.innerHTML = '';
+            if (orders.length === 0) emptyMsg.classList.remove('d-none');
+            else emptyMsg.classList.add('d-none');
+
+            orders.forEach((o, i) => {
+                let statusBadge = o.status==='done'?'status-done':(o.status==='pending'?'status-pending':(o.status==='shipping'?'status-shipping':'status-cancel'));
+                let statusText = o.status==='done'?'✅ Hoàn thành':(o.status==='pending'?'⏳ Chờ xử lý':(o.status==='shipping'?'🚚 Đang giao':'❌ Đã hủy'));
+                
+                let summary = o.items.map(x => `${x.name} (x${x.quantity})`).join('<br>');
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="fw-bold text-primary">#${o.id}</td>
+                        <td>${o.customer}<br><small class="text-muted">${o.phone}</small></td>
+                        <td><small>${summary}</small></td>
+                        <td class="fw-bold text-danger">${Number(o.total).toLocaleString()}đ</td>
+                        <td><span class="${statusBadge}">${statusText}</span></td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-sm btn-primary" onclick="updateOrderStatus(${i}, 'shipping')" title="Giao hàng"><i class="fas fa-truck"></i></button>
+                                <button class="btn btn-sm btn-success" onclick="updateOrderStatus(${i}, 'done')" title="Hoàn thành"><i class="fas fa-check"></i></button>
+                                <button class="btn btn-sm btn-secondary" onclick="updateOrderStatus(${i}, 'cancel')" title="Hủy"><i class="fas fa-times"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            updateDashboardStats(orders);
         }
 
+        function updateOrderStatus(index, st) {
+            let orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+            orders[index].status = st;
+            localStorage.setItem('allOrders', JSON.stringify(orders));
+            loadOrders(); // Vẽ lại bảng
+        }
+
+        function clearOrders() {
+            if(confirm("Xóa hết đơn hàng?")) { localStorage.removeItem('allOrders'); loadOrders(); }
+        }
+
+        // --- 3. DASHBOARD ---
+        function loadDashboard() {
+            const orders = JSON.parse(localStorage.getItem('allOrders')) || [];
+            updateDashboardStats(orders);
+        }
+
+        function updateDashboardStats(orders) {
+            const revenue = orders.filter(o=>o.status==='done').reduce((s,o)=>s+o.total,0);
+            document.getElementById('stat-revenue').innerText = revenue.toLocaleString() + 'đ';
+            document.getElementById('stat-orders').innerText = orders.length;
+            
+            const recent = document.getElementById('recent-orders-body');
+            recent.innerHTML = '';
+            orders.slice(0,5).forEach(o => {
+                let badgeClass = o.status === 'done' ? 'bg-success' : 'bg-warning text-dark';
+                recent.innerHTML += `<tr><td>#${o.id}</td><td>${o.customer}</td><td class="fw-bold">${Number(o.total).toLocaleString()}đ</td><td><span class="badge ${badgeClass}">${o.status}</span></td></tr>`;
+            });
+        }
+
+        // --- 4. MODAL LOGIC (ADD/EDIT API) ---
+        function openAddModal() { editingId=null; document.getElementById('productForm').reset(); productModalBox.show(); }
+        
         function openEditModal(id) {
             const p = allProducts.find(x => x._id === id);
             editingId = id;
             document.getElementById('p-name').value = p.name;
             document.getElementById('p-price').value = p.price;
             document.getElementById('p-image').value = p.image;
-            document.getElementById('p-category').value = p.category || 'Thức ăn';
-            document.getElementById('modalTitle').innerText = "Sửa Sản Phẩm";
+            document.getElementById('p-category').value = p.category;
             productModalBox.show();
         }
 
@@ -231,66 +283,18 @@
                 image: document.getElementById('p-image').value,
                 category: document.getElementById('p-category').value
             };
-
             try {
-                if(editingId) {
-                    await fetch(`${API_URL}/products/${editingId}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)});
-                } else {
-                    await fetch(`${API_URL}/products`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)});
-                }
+                if(editingId) await fetch(`${API_URL}/products/${editingId}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)});
+                else await fetch(`${API_URL}/products`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)});
                 productModalBox.hide();
-                loadProducts(); // Tải lại bảng
+                allProducts = []; // Xóa cache để tải lại
+                loadProducts();
                 alert("Thành công!");
-            } catch(err) { alert("Lỗi lưu dữ liệu!"); }
+            } catch(e) { alert("Lỗi lưu!"); }
         });
 
         async function deleteProduct(id) {
-            if(confirm("Xóa sản phẩm này?")) {
-                await fetch(`${API_URL}/products/${id}`, { method: 'DELETE' });
-                loadProducts();
-            }
-        }
-
-        // --- 3. THỐNG KÊ & ĐƠN HÀNG (GỌI API) ---
-        async function fetchStats() {
-            try {
-                const res = await fetch(`${API_URL}/orders/admin/stats`);
-                const data = await res.json();
-                document.getElementById('stat-revenue').innerText = (data.totalRevenue||0).toLocaleString() + 'đ';
-                document.getElementById('stat-orders').innerText = data.totalOrders||0;
-                document.getElementById('stat-products').innerText = data.totalProducts||0;
-            } catch(e){}
-        }
-
-        async function fetchAdminOrders() {
-            try {
-                const res = await fetch(`${API_URL}/orders/admin/all`);
-                const orders = await res.json();
-                const tbody = document.getElementById('order-table-body');
-                tbody.innerHTML = '';
-                
-                orders.forEach(o => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>#${o._id.slice(-6).toUpperCase()}</td>
-                            <td>${o.userId?.username || 'Khách'}</td>
-                            <td class="text-danger fw-bold">${Number(o.totalAmount).toLocaleString()}đ</td>
-                            <td>
-                                <select class="form-select form-select-sm" onchange="updateStatus('${o._id}', this.value)">
-                                    <option value="Pending" ${o.status==='Pending'?'selected':''}>⏳ Chờ xử lý</option>
-                                    <option value="Shipping" ${o.status==='Shipping'?'selected':''}>🚚 Đang giao</option>
-                                    <option value="Completed" ${o.status==='Completed'?'selected':''}>✅ Hoàn thành</option>
-                                    <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>❌ Hủy</option>
-                                </select>
-                            </td>
-                            <td>${new Date(o.createdAt).toLocaleDateString('vi-VN')}</td>
-                        </tr>`;
-                });
-            } catch(e){}
-        }
-
-        async function updateStatus(id, st) {
-            await fetch(`${API_URL}/orders/admin/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({status: st})});
+            if(confirm("Xóa?")) { await fetch(`${API_URL}/products/${id}`, { method: 'DELETE' }); allProducts=[]; loadProducts(); }
         }
     </script>
 </body>
